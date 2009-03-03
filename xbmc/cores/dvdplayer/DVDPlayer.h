@@ -143,6 +143,10 @@ public:
   virtual void RegisterAudioCallback(IAudioCallback* pCallback) { m_dvdPlayerAudio.RegisterAudioCallback(pCallback); }
   virtual void UnRegisterAudioCallback()                        { m_dvdPlayerAudio.UnRegisterAudioCallback(); }
   virtual bool OpenFile(const CFileItem& file, const CPlayerOptions &options);
+
+  virtual bool QueueNextFile(const CFileItem &file);
+  virtual void OnNothingToQueueNotify();
+
   virtual bool CloseFile();
   virtual bool IsPlaying() const;
   virtual void Pause();
@@ -295,6 +299,27 @@ protected:
   std::string m_mimetype;  // hold a hint to what content file contains (mime type)
   ECacheState m_caching;
   CFileItem   m_item;
+
+  struct SPlayQueue
+    : CCriticalSection
+  {
+    void Clear()
+    {
+      state = IDLE;
+    }
+
+    enum EQueueState
+    {
+      QUEUED,
+      STARTING,
+      FAILED,
+      WAITING,
+      IDLE,
+    };
+
+    CFileItem   item;
+    EQueueState state;
+  } m_Queue;
 
   CCurrentStream m_CurrentAudio;
   CCurrentStream m_CurrentVideo;
