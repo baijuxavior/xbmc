@@ -3463,7 +3463,7 @@ bool CApplication::PlayStack(const CFileItem& item, bool bRestart)
   }
 
   *m_itemCurrentFile = item;
-  m_currentStackPosition = 0;
+  m_currentStackPosition = -1;
   m_eCurrentPlayer = EPC_NONE; // must be reset on initial play otherwise last player will be used
 
   if (seconds > 0)
@@ -3476,7 +3476,7 @@ bool CApplication::PlayStack(const CFileItem& item, bool bRestart)
         CFileItem item(*(*m_currentStack)[i]);
         long start = (i > 0) ? (*m_currentStack)[i-1]->m_lEndOffset : 0;
         item.m_lStartOffset = (long)(seconds - start) * 75;
-        m_currentStackPosition = i;
+        m_currentStackPosition = i-1;
         return PlayFile(item, true);
       }
     }
@@ -3499,7 +3499,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
     m_iPlaySpeed = 1;
     *m_itemCurrentFile = item;
     m_nextPlaylistItem = -1;
-    m_currentStackPosition = 0;
+    m_currentStackPosition = -1;
     m_currentStack->Clear();
 
     if (item.IsVideo())
@@ -3629,7 +3629,7 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
   else if(m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0)
   {
     // TODO - this will fail if user seeks back to first file in stack
-    if(m_currentStackPosition == 0 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
+    if(m_currentStackPosition == -1 || m_itemCurrentFile->m_lStartOffset == STARTOFFSET_RESUME)
       options.fullscreen = g_advancedSettings.m_fullScreenOnMovieStart && !g_settings.m_bStartVideoWindowed;
     else
       options.fullscreen = false;
@@ -4384,6 +4384,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_PLAYBACK_STARTED:
     {
+      // If we are playing the next part of a stack, we are done
+      if (m_itemCurrentFile->IsStack() && m_currentStack->Size())
+      {
+        m_currentStackPosition++;
+        break;
+      }
+
       // Update our infoManager with the new details etc.
       if (m_nextPlaylistItem >= 0)
       { // we've started a previously queued item
@@ -4470,9 +4477,9 @@ bool CApplication::OnMessage(CGUIMessage& message)
       // first check if we still have items in the stack to play
       if (message.GetMessage() == GUI_MSG_PLAYBACK_ENDED)
       {
-        if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > 0 && m_currentStackPosition < m_currentStack->Size() - 1)
+        if (m_itemCurrentFile->IsStack() && m_currentStack->Size() > m_currentStackPosition + 1)
         { // just play the next item in the stack
-          PlayFile(*(*m_currentStack)[++m_currentStackPosition], true);
+          PlayFile(*(*m_currentStack)[m_currentStackPosition+1], true);
           return true;
         }
       }
@@ -5082,7 +5089,7 @@ void CApplication::SeekTime( double dTime )
             m_pPlayer->SeekTime((__int64)((dTime - startOfNewFile) * 1000.0));
           else
           { // seeking to a new file
-            m_currentStackPosition = i;
+            m_currentStackPosition = i-1;
             CFileItem item(*(*m_currentStack)[i]);
             item.m_lStartOffset = (long)((dTime - startOfNewFile) * 75.0);
             // don't just call "PlayFile" here, as we are quite likely called from the
