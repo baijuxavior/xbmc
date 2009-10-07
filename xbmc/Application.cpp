@@ -4384,12 +4384,9 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_PLAYBACK_STARTED:
     {
-      // If we are playing the next part of a stack, we are done
+      // If this was a stack we switched to next item, or started player
       if (m_itemCurrentFile->IsStack() && m_currentStack->Size())
-      {
         m_currentStackPosition++;
-        break;
-      }
 
       // Update our infoManager with the new details etc.
       if (m_nextPlaylistItem >= 0)
