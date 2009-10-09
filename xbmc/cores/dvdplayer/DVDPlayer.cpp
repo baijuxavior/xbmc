@@ -371,6 +371,17 @@ bool CDVDPlayer::QueueNextFile(const CFileItem &file)
   if(!IsPlaying())
     return false;
 
+  /* since we don't know what todo with current video settings *
+   * we don't allow playlists to play seamless for now         */
+  if(!g_application.CurrentFileItem().IsStack())
+  {
+    CLog::Log(LOGDEBUG, "CDVDPlayer::QueueNextFile() - currently don't allow seamless for playlists");
+    CSingleLock lock(m_Queue);
+    m_Queue.item  = file;
+    m_Queue.state = SPlayQueue::FAILED;
+    return false;
+  }
+
   CSingleLock lock(m_Queue);
   m_Queue.item  = file;
   m_Queue.state = SPlayQueue::QUEUED;
