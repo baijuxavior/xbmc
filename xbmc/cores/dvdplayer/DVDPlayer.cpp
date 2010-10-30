@@ -529,7 +529,6 @@ retry:
 
   SetAVDelay(g_settings.m_currentVideoSettings.m_AudioDelay);
   SetSubTitleDelay(g_settings.m_currentVideoSettings.m_SubtitleDelay);
-  m_clock.Reset();
   m_dvd.Clear();
   m_errorCount = 0;
 
