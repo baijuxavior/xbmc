@@ -993,11 +993,13 @@ void CDVDPlayer::Process()
     }
 
     // if this was a queued event, notify application
-    if(m_Queue.state == SPlayQueue::STARTING)
-    {
-      CLog::Log(LOGDEBUG, "CDVDPlayer::Process - successfully opened queued file");
-      m_Queue.state = SPlayQueue::IDLE;
-      m_callback.OnPlayBackStarted();
+    { CSingleLock lock(m_Queue);
+      if(m_Queue.state == SPlayQueue::STARTING)
+      {
+        CLog::Log(LOGDEBUG, "CDVDPlayer::Process - successfully opened queued file");
+        m_Queue.state = SPlayQueue::IDLE;
+        m_callback.OnPlayBackStarted();
+      }
     }
 
     // handle eventual seeks due to playspeed
