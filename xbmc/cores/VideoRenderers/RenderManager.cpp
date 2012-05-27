@@ -29,11 +29,13 @@
 #include "utils/MathUtils.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
+#include "windowing/WindowingFactory.h"
 
 #include "Application.h"
 #include "settings/Settings.h"
 #include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/TimeUtils.h"
 
 #if defined(HAS_GL)
   #include "LinuxRendererGL.h"
@@ -148,6 +150,24 @@ static double wrap(double x, double minimum, double maximum)
 
 void CXBMCRenderManager::WaitPresentTime(double presenttime)
 {
+  /* try to have window manager schedule this frame */
+  SPresentStatus info;
+  if(g_graphicsContext.IsFullScreenVideo()
+  && g_application.IsCurrentThread()
+  && g_Windowing.PresentStatus(info))
+  {
+    int64_t target = CDVDClock::GetAbsoluteTics(presenttime * DVD_TIME_BASE);
+    int64_t freq   = CurrentHostFrequency();
+    int64_t offset = ((target - info.vsync_tick) * info.vsync_rate_num + (info.vsync_rate_den * freq - 1)) / (info.vsync_rate_den * freq);
+    if(offset < 1)
+      offset = 1;
+    if(offset * info.vsync_rate_den > info.vsync_rate_num)
+      offset = info.vsync_rate_num / info.vsync_rate_den;
+
+    if(g_Windowing.SchedulePresent(info.vsync_count + offset))
+      return;
+  }
+
   double frametime;
   int fps = g_VideoReferenceClock.GetRefreshRate(&frametime);
   if(fps <= 0)

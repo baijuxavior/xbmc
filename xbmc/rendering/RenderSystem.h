@@ -61,6 +61,14 @@ enum
   RENDER_QUIRKS_BROKEN_OCCLUSION_QUERY       = 1 << 2,
 };
 
+struct SPresentStatus
+{
+  int64_t vsync_tick;     /* CurrentHostCounter at last vsync */
+  int64_t vsync_count;    /* vsync counter */
+  int32_t vsync_rate_num; /* vsync rate, numerator   */
+  int32_t vsync_rate_den; /* vsync rate, denominator */
+};
+
 class CRenderSystemBase
 {
 public:
@@ -77,6 +85,8 @@ public:
   virtual bool BeginRender() = 0;
   virtual bool EndRender() = 0;
   virtual bool PresentRender(const CDirtyRegionList& dirty) = 0;
+  virtual bool SchedulePresent(int64_t vsync_tick) { return false; };
+  virtual bool PresentStatus(SPresentStatus& info) { return false; }
   virtual bool ClearBuffers(color_t color) = 0;
   virtual bool IsExtSupported(const char* extension) = 0;
 
