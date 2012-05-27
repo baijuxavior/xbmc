@@ -53,6 +53,8 @@ public:
   virtual bool BeginRender();
   virtual bool EndRender();
   virtual bool PresentRender(const CDirtyRegionList &dirty);
+  virtual bool SchedulePresent(int64_t timestamp);
+  virtual bool PresentStatus(SPresentStatus& info);
   virtual bool ClearBuffers(color_t color);
   virtual bool IsExtSupported(const char* extension);
   virtual bool IsSurfaceFormatOk(D3DFORMAT surfFormat, DWORD usage);
@@ -154,6 +156,8 @@ protected:
   std::vector<ID3DResource*>  m_resources;
 
   bool                        m_inScene; ///< True if we're in a BeginScene()/EndScene() block
+  bool                        m_scheduledPresent; // True if next present have been sheduled
+  bool                        m_scheduledEnabled;
 
   D3DVIEWPORT9                m_viewPort;
   D3DXMATRIX                  m_projection;
