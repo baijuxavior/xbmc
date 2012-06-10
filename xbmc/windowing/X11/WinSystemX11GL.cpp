@@ -24,6 +24,8 @@
 
 #include "WinSystemX11GL.h"
 #include "utils/log.h"
+#include "cores/dvdplayer/DVDClock.h"
+#include <time.h>
 
 CWinSystemX11GL::CWinSystemX11GL()
 {
@@ -35,10 +37,63 @@ CWinSystemX11GL::CWinSystemX11GL()
   m_glXSwapBuffersMscOML = NULL;
 
   m_iVSyncErrors = 0;
+  m_Scheduled = 0;
+  m_UstOffset = 0;
 }
 
 CWinSystemX11GL::~CWinSystemX11GL()
 {
+}
+
+bool CWinSystemX11GL::SchedulePresent(int64_t timestamp)
+{
+  if(m_iVSyncMode == 5)
+  {
+    m_Scheduled = timestamp;
+    return true;
+  }
+  return false;
+}
+
+static int64_t TicksToUst(int64_t ticks)
+{
+  struct timespec mon, rel;
+  clock_gettime(CLOCK_MONOTONIC, &mon);
+  clock_gettime(CLOCK_REALTIME , &rel);
+
+  ticks += (rel.tv_sec  - mon.tv_sec)  * 1000000000;
+  ticks += (rel.tv_nsec - mon.tv_nsec);
+  return ticks / 1000;
+}
+
+
+static int64_t UstToTics(int64_t ust)
+{
+  struct timespec mon, rel;
+  clock_gettime(CLOCK_MONOTONIC, &mon);
+  clock_gettime(CLOCK_REALTIME , &rel);
+
+  ust *= 1000;
+  ust -= (rel.tv_sec  - mon.tv_sec)  * 1000000000;
+  ust -= (rel.tv_nsec - mon.tv_nsec);
+  return ust;
+}
+
+
+bool CWinSystemX11GL::PresentStatus(struct SPresentStatus& info)
+{
+  int64_t ust, msc, sbc;
+  if(!m_glXGetSyncValuesOML(m_dpy, m_glWindow, &ust, &msc, &sbc))
+    return false;
+  int32_t num, den;
+  if(!m_glXGetMscRateOML(m_dpy, m_glWindow, &num, &den))
+    return false;
+
+  info.vsync_count = msc;
+  info.vsync_tick  = UstToTics(ust);
+  info.vsync_rate_num = num;
+  info.vsync_rate_den = den;
+  return true;
 }
 
 bool CWinSystemX11GL::PresentRenderImpl(const CDirtyRegionList& dirty)
@@ -110,14 +165,17 @@ bool CWinSystemX11GL::PresentRenderImpl(const CDirtyRegionList& dirty)
   }
   else if (m_iVSyncMode == 5)
   {
-    int64_t ust, msc, sbc;
-    if(m_glXGetSyncValuesOML(m_dpy, m_glWindow, &ust, &msc, &sbc))
-      m_glXSwapBuffersMscOML(m_dpy, m_glWindow, msc, 0, 0);
+    glFlush();
+    //fprintf(stderr, "%s - glXSwapBuffersMscOML - scheduled at %"PRId64"\n", __FUNCTION__, m_Scheduled);
+    if(m_Scheduled)
+      m_glXSwapBuffersMscOML(m_dpy, m_glWindow, m_Scheduled, 0, 0);
     else
-      CLog::Log(LOGERROR, "%s - glXSwapBuffersMscOML - Failed to get current retrace count", __FUNCTION__);
+      m_glXSwapBuffersMscOML(m_dpy, m_glWindow, 0, 0, 0);
   }
   else
     glXSwapBuffers(m_dpy, m_glWindow);
+
+  m_Scheduled = 0;
 
   return true;
 }
@@ -182,6 +240,7 @@ void CWinSystemX11GL::SetVSyncImpl(bool enable)
       CLog::Log(LOGWARNING, "%s - glXSwapIntervalMESA failed", __FUNCTION__);
   }
 
+  CLog::Log(LOGDEBUG, "%s - Selected vertical sync method %d", __FUNCTION__, m_iVSyncMode);
 }
 
 bool CWinSystemX11GL::IsExtSupported(const char* extension)
@@ -211,14 +270,17 @@ bool CWinSystemX11GL::CreateNewWindow(const CStdString& name, bool fullScreen, R
 
   /* any time window is recreated we need new pointers */
   if (IsExtSupported("GLX_OML_sync_control"))
-    m_glXGetSyncValuesOML = (Bool (*)(Display*, GLXDrawable, int64_t*, int64_t*, int64_t*))glXGetProcAddress((const GLubyte*)"glXGetSyncValuesOML");
-  else
-    m_glXGetSyncValuesOML = NULL;
-
-  if (IsExtSupported("GLX_OML_sync_control"))
+  {
+    m_glXGetSyncValuesOML  = (Bool (*)(Display*, GLXDrawable, int64_t*, int64_t*, int64_t*))glXGetProcAddress((const GLubyte*)"glXGetSyncValuesOML");
     m_glXSwapBuffersMscOML = (int64_t (*)(Display*, GLXDrawable, int64_t, int64_t, int64_t))glXGetProcAddress((const GLubyte*)"glXSwapBuffersMscOML");
+    m_glXGetMscRateOML     = (Bool (*)(Display*, GLXDrawable, int32_t*, int32_t*))          glXGetProcAddress((const GLubyte*)"glXGetMscRateOML");
+  }
   else
+  {
+    m_glXGetSyncValuesOML  = NULL;
     m_glXSwapBuffersMscOML = NULL;
+    m_glXGetMscRateOML     = NULL;
+  }
 
   if (IsExtSupported("GLX_SGI_video_sync"))
     m_glXWaitVideoSyncSGI = (int (*)(int, int, unsigned int*))glXGetProcAddress((const GLubyte*)"glXWaitVideoSyncSGI");

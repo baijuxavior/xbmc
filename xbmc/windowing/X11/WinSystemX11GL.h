@@ -37,6 +37,8 @@ public:
   virtual bool SetFullScreen(bool fullScreen, RESOLUTION_INFO& res, bool blankOtherDisplays);
 
   virtual bool IsExtSupported(const char* extension);
+  virtual bool SchedulePresent(int64_t timestamp);
+  virtual bool PresentStatus(SPresentStatus& info);
 
 protected:
   virtual bool PresentRenderImpl(const CDirtyRegionList& dirty);
@@ -49,10 +51,13 @@ protected:
   int (*m_glXSwapIntervalSGI)(int);
   int (*m_glXSwapIntervalMESA)(int);
 
+  Bool    (*m_glXGetMscRateOML)(Display* dpy, GLXDrawable drawable, int32_t* numerator, int32_t* denominator);
   Bool    (*m_glXGetSyncValuesOML)(Display* dpy, GLXDrawable drawable, int64_t* ust, int64_t* msc, int64_t* sbc);
   int64_t (*m_glXSwapBuffersMscOML)(Display* dpy, GLXDrawable drawable, int64_t target_msc, int64_t divisor,int64_t remainder);
 
   int m_iVSyncErrors;
+  int64_t m_Scheduled;
+  int64_t m_UstOffset;
 };
 
 XBMC_GLOBAL_REF(CWinSystemX11GL,g_Windowing);
