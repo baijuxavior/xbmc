@@ -5702,11 +5702,6 @@ bool CApplication::IsCurrentThread() const
   return CThread::IsCurrentThread(m_threadID);
 }
 
-bool CApplication::IsPresentFrame()
-{
-  return m_bPresentFrame;
-}
-
 void CApplication::SetRenderGUI(bool renderGUI)
 {
   if (renderGUI && ! m_renderGUI)
