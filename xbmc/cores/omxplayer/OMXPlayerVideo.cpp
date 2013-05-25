@@ -324,7 +324,7 @@ void OMXPlayerVideo::Output(int iGroupId, double pts, bool bDropPacket)
 
   int buffer = g_renderManager.WaitForBuffer(CThread::m_bStop, iSleepTime + DVD_MSEC_TO_TIME(500));
   if (buffer < 0)
-    return EOS_DROPPED;
+    return;
 
   double pts_media = m_av_clock->OMXMediaTime(false);
   ProcessOverlays(iGroupId, pts_media);
@@ -785,7 +785,7 @@ void OMXPlayerVideo::ResolutionUpdateCallBack(uint32_t width, uint32_t height)
 
   if(!g_renderManager.Configure(width, height,
         iDisplayWidth, iDisplayHeight, m_fFrameRate, flags, format, 0,
-        m_hints.orientation))
+        m_hints.orientation, 0))
   {
     CLog::Log(LOGERROR, "%s - failed to configure renderer", __FUNCTION__);
     return;
