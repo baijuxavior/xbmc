@@ -2924,6 +2924,13 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
   if(pMenus && pMenus->IsInMenu())
     hint.stills = true;
 
+  if(m_filename.find("3DSBS") != string::npos
+  || m_filename.find("HSBS")  != string::npos)
+    hint.stereo_mode = "left_right";
+  else if(m_filename.find("3DTAB") != string::npos
+       || m_filename.find("HTAB")  != string::npos)
+    hint.stereo_mode = "top_bottom";
+
   if(m_CurrentVideo.id    < 0
   || m_CurrentVideo.hint != hint)
   {
