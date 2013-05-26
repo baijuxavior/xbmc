@@ -2736,12 +2736,21 @@ bool CApplication::OnAction(const CAction &action)
   }
   else if (action.GetID() == ACTION_MODE3D)
   {
-    int mode = CSettings::Get().GetInt("videoscreen.mode3d") + 1;
-    if (mode > RENDER_STEREO_MODE_HARDWAREBASED)
-      mode = RENDER_STEREO_MODE_OFF;
+    CContextButtons stereomode;
+	stereomode.Add(0, g_localizeStrings.Get(36501) + " OFF");
+	stereomode.Add(1, 36503);  
+	stereomode.Add(2, 36504);
+	stereomode.Add(3, 36505);
+	stereomode.Add(4, 36506);
+	stereomode.Add(5, 36507);
+	stereomode.Add(6, 36508);
+	int mode = CGUIDialogContextMenu::ShowAndGetChoice(stereomode);
 
-    CSettings::Get().SetInt("videoscreen.mode3d", mode);
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36501), g_localizeStrings.Get(36502 + mode));
+	if (mode > -1)
+		{CSettings::Get().SetInt("videoscreen.mode3d", mode);
+		CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36501), g_localizeStrings.Get(36502 + mode));
+		}
+	return true;
   }
   return false;
 }

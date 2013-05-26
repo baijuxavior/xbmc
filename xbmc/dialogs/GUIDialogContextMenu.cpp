@@ -98,7 +98,7 @@ bool CGUIDialogContextMenu::OnMessage(CGUIMessage &message)
 
 bool CGUIDialogContextMenu::OnAction(const CAction& action)
 {
-  if (action.GetID() == ACTION_CONTEXT_MENU)
+  if (action.GetID() == ACTION_CONTEXT_MENU || action.GetID() == ACTION_MODE3D)
   {
     Close();
     return true;
