@@ -14125,42 +14125,42 @@ msgstr ""
 #empty strings from id 36421 to 36499
 #end reservation
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36501"
 msgid "Stereoscopic 3d Mode"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36502"
 msgid "None"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36503"
 msgid "Over/Under"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36504"
 msgid "Side by side"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36505"
 msgid "Anaglyph Red/Cyan"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36506"
 msgid "Anaglyph Green/Magenta"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36507"
 msgid "Interlaced"
 msgstr ""
 
-#: xbmc/settings/GUISettings.cpp
+#: system/settings/settings.xml
 msgctxt "#36508"
 msgid "Hardware Based"
 msgstr ""

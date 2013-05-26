@@ -823,6 +823,7 @@ bool CApplication::Create()
 
 bool CApplication::CreateGUI()
 {
+  CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF); //start xbmc in 2d mode.
   m_renderGUI = true;
 #ifdef HAS_SDL
   CLog::Log(LOGNOTICE, "Setup SDL");
