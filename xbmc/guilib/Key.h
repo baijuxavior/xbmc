@@ -314,7 +314,10 @@
 #define ACTION_FILTER                 233
 
 #define ACTION_SWITCH_PLAYER          234
+
+//stereoscopic 3d related actions
 #define ACTION_MODE3D                 235
+#define ACTION_MODE3D_ENABLE          236 //enable 3d support
 
 #define ACTION_SETTINGS_RESET         240
 #define ACTION_SETTINGS_LEVEL_CHANGE  241

@@ -14126,6 +14126,11 @@ msgstr ""
 #end reservation
 
 #: system/settings/settings.xml
+msgctxt "#36500"
+msgid "Stereoscopic 3d"
+msgstr ""
+
+#: system/settings/settings.xml
 msgctxt "#36501"
 msgid "Stereoscopic 3d Mode"
 msgstr ""
@@ -14163,6 +14168,26 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#36508"
 msgid "Hardware Based"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36509"
+msgid "Enable Stereoscopic 3d Support"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36510"
+msgid "Enable Stereoscopic 3d support for this feature"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36511"
+msgid "Stereoscopic 3d support enabled"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36512"
+msgid "Stereoscopic 3d support disabled"
 msgstr ""
 
 #reserved strings 365XX

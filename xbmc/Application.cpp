@@ -2735,24 +2735,36 @@ bool CApplication::OnAction(const CAction &action)
       g_windowManager.ActivateWindow(WINDOW_MUSIC_PLAYLIST);
     return true;
   }
-  else if (action.GetID() == ACTION_MODE3D)
-  {
-    CContextButtons stereomode;
-	stereomode.Add(0, g_localizeStrings.Get(36501) + " OFF");
-	stereomode.Add(1, 36503);  
-	stereomode.Add(2, 36504);
-	stereomode.Add(3, 36505);
-	stereomode.Add(4, 36506);
-	stereomode.Add(5, 36507);
-	stereomode.Add(6, 36508);
-	int mode = CGUIDialogContextMenu::ShowAndGetChoice(stereomode);
 
-	if (mode > -1)
-		{CSettings::Get().SetInt("videoscreen.mode3d", mode);
-		CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36501), g_localizeStrings.Get(36502 + mode));
+	if (action.GetID() == ACTION_MODE3D_ENABLE)
+  {
+		bool support = CSettings::Get().GetBool("videoscreen.enable3dsupport");
+		CSettings::Get().SetBool("videoscreen.enable3dsupport", !support);
+		if (support)
+			CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36500), g_localizeStrings.Get(36512));
+		else
+			CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36500), g_localizeStrings.Get(36511));
+		return true;
+	}
+
+  if (action.GetID() == ACTION_MODE3D)
+  {
+		if (CSettings::Get().GetBool("videoscreen.enable3dsupport"))
+		{
+			CContextButtons stereomode;
+			stereomode.Add(0, g_localizeStrings.Get(36501) + " OFF");
+			for (int i=1; i<RENDER_STEREO_MODE_COUNT; i++)
+			if (g_Windowing.SupportsStereo((RENDER_STEREO_MODE)i)) stereomode.Add(i, 36502+i);
+				int mode = CGUIDialogContextMenu::ShowAndGetChoice(stereomode);
+			if (mode > -1)
+				{CSettings::Get().SetInt("videoscreen.mode3d", mode);
+				CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(36501), g_localizeStrings.Get(36502 + mode));
+				}
 		}
+		else
+			CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(36512), g_localizeStrings.Get(36510));
 	return true;
-  }
+	}
   return false;
 }
 
