@@ -30,6 +30,18 @@
 
 class TiXmlNode;
 
+enum PREFERRED_STEREO_MODE
+{
+	PREFERRED_STEREO_MODE_NONE,
+	PREFERRED_STEREO_MODE_SPLIT_HORIZONTAL,
+	PREFERRED_STEREO_MODE_SPLIT_VERTICAL,
+	PREFERRED_STEREO_MODE_ANAGLYPH_RED_CYAN,
+	PREFERRED_STEREO_MODE_ANAGLYPH_GREEN_MAGENTA,
+	PREFERRED_STEREO_MODE_INTERLACED,
+	PREFERRED_STEREO_MODE_HARDWAREBASED,
+	PREFERRED_STEREO_MODE_COUNT,
+};
+
 class CDisplaySettings : public ISettingCallback, public ISubSettings,
                          public Observable
 {
@@ -93,6 +105,7 @@ public:
   static void SettingOptionsScreensFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
   static void SettingOptionsVerticalSyncsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
   static void SettingOptionsMode3dFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
+	static void SettingOptionsPreferred3DViewModeFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current);
 
 protected:
   CDisplaySettings();

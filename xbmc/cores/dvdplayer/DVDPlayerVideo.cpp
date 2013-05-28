@@ -1103,6 +1103,8 @@ static unsigned int GetStereoModeFlags(const std::string mode)
     convert["anaglyph_green_magenta"] = 0u;
     convert["block_lr"]               = 0u;
     convert["block_rl"]               = 0u;
+		convert["sbs_2d"]									= CONF_FLAGS_STEREO_MODE_SBS_2D;
+		convert["tab_2d"]									= CONF_FLAGS_STEREO_MODE_TAB_2D;
   }
   return convert[mode];
 }

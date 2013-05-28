@@ -14190,6 +14190,41 @@ msgctxt "#36512"
 msgid "Stereoscopic 3d support disabled"
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#36513"
+msgid "Preferred playback mode for 3D movies"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36514"
+msgid "3D Mode"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36515"
+msgid "2D Mode"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36516"
+msgid "Normal Mode"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36517"
+msgid "Show Option"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36518"
+msgid "Preferred 3D mode"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36519"
+msgid "Turn off 3D mode when playback is stopped"
+msgstr ""
+
 #reserved strings 365XX
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp

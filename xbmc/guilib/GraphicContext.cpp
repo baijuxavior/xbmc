@@ -971,8 +971,11 @@ void CGraphicContext::SetMediaDir(const CStdString &strMediaDir)
 void CGraphicContext::Flip(const CDirtyRegionList& dirty)
 {
   g_Windowing.PresentRender(dirty);
+	bool support = CSettings::Get().GetBool("videoscreen.enable3dsupport");
+	if (!support)
+		CSettings::Get().SetInt("videoscreen.mode3d",0);
   RENDER_STEREO_MODE mode = (RENDER_STEREO_MODE)CSettings::Get().GetInt("videoscreen.mode3d");
-  if(m_stereoMode != mode)
+	if(m_stereoMode != mode)
   {
     m_stereoMode = mode;
     SetStereoView(RENDER_STEREO_VIEW_OFF);

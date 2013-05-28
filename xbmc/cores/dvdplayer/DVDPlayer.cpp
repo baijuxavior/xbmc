@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-
+#include "settings/AdvancedSettings.h"
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "DVDPlayer.h"
@@ -442,7 +442,8 @@ CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
 CDVDPlayer::~CDVDPlayer()
 {
   CloseFile();
-
+	if ( CSettings::Get().GetBool("videoplayer.stop3dmode") == true) 
+	 CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
 #ifdef DVDDEBUG_MESSAGE_TRACKER
   g_dvdMessageTracker.DeInit();
 #endif
@@ -2924,12 +2925,76 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
   if(pMenus && pMenus->IsInMenu())
     hint.stills = true;
 
-  if(m_filename.find("3DSBS") != string::npos
-  || m_filename.find("HSBS")  != string::npos)
-    hint.stereo_mode = "left_right";
-  else if(m_filename.find("3DTAB") != string::npos
-       || m_filename.find("HTAB")  != string::npos)
-    hint.stereo_mode = "top_bottom";
+	if (CSettings::Get().GetBool("videoscreen.enable3dsupport"))
+		{
+		int preferred3dplaymode =CSettings::Get().GetInt("videoplayer.preferred3dplaymode");
+		int preferred3dviewmode = CSettings::Get().GetInt("videoplayer.preferred3dviewmode");
+ 		int m_3dtype = Get3DTypeFromMovieName(m_filename);
+
+		if (m_3dtype == 1)
+			{
+				hint.stereo_mode = "left_right";
+				if (preferred3dplaymode == 3) // show user choice
+					preferred3dplaymode = GetPreferred3DPlaybackMode();
+
+				if (preferred3dplaymode == 0)// if 3d
+					{
+					if (preferred3dviewmode == 0) // none. use normal mode.
+						{CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+						 g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+						}
+					else
+						CSettings::Get().SetInt("videoscreen.mode3d", preferred3dviewmode);
+					}
+
+				if (preferred3dplaymode == 1) //if 2d
+					{
+						hint.stereo_mode = "sbs_2d";
+						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+					}
+
+				if (preferred3dplaymode == 2) //normal
+					{
+						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+						g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+					}
+		}
+		else if (m_3dtype == 2)
+			{
+				hint.stereo_mode = "top_bottom";
+				if (preferred3dplaymode == 3) // show user choice
+					preferred3dplaymode = GetPreferred3DPlaybackMode();
+
+				if (preferred3dplaymode == 0)// if 3d
+					{
+						if (preferred3dviewmode == 0) // none. use normal mode.
+						{
+							CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+							g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+						}
+					else
+						CSettings::Get().SetInt("videoscreen.mode3d", preferred3dviewmode);
+					}
+
+				if (preferred3dplaymode == 1) //if 2d
+					{
+						hint.stereo_mode = "tab_2d";
+						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+					}
+
+				if (preferred3dplaymode == 2) //normal
+					{
+						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+						g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+					}
+			}
+		else if (m_3dtype == 0) // if not sbs or tab assume it is 2d
+			{ 
+				hint.stereo_mode = "mono";
+				CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+				g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
+			 }
+	}
 
   if(m_CurrentVideo.id    < 0
   || m_CurrentVideo.hint != hint)
@@ -4168,4 +4233,46 @@ bool CDVDPlayer::CachePVRStream(void) const
   return m_pInputStream->IsStreamType(DVDSTREAM_TYPE_PVRMANAGER) &&
       !g_PVRManager.IsPlayingRecording() &&
       g_advancedSettings.m_bPVRCacheInDvdPlayer;
+}
+
+int Get3DTypeFromMovieName(CStdString m_name)
+{
+	StringUtils::ToUpper(m_name);
+	std::string tag = g_advancedSettings.m_sbs3dtags;
+	StringUtils::ToUpper(tag);
+	CStdStringArray tags;
+	if (tag != "")
+	{	
+		StringUtils::SplitString(tag, "|", tags);
+		for (unsigned int i = 0; i < tags.size(); i++)
+			{ 
+				tag = tags[i];
+				if(m_name.find(tag)!= string::npos)
+					return 1;
+			}
+	}
+
+	tag = g_advancedSettings.m_tab3dtags;
+	if (tag != "")
+	{	
+		StringUtils::SplitString(tag, "|", tags);
+		for (unsigned int j = 0; j < tags.size(); j++)
+		{ 
+			tag = tags[j];
+			if(m_name.find(tag)!= string::npos)
+				return 2;
+		}
+	}
+
+	return 0;
+
+}
+
+int GetPreferred3DPlaybackMode()
+{
+	CContextButtons choices;
+	choices.Add(0,"Play in 3D Mode");
+	choices.Add(1, "Play in 2D Mode");  
+	choices.Add(2, "Play in Normal Mode");
+	return CGUIDialogContextMenu::ShowAndGetChoice(choices);
 }

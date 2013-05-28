@@ -593,26 +593,42 @@ void CBaseRenderer::ManageDisplay()
   switch(stereo_mode)
   {
     case CONF_FLAGS_STEREO_MODE_TAB:
-      if     (stereo_view == RENDER_STEREO_VIEW_LEFT)
+      if (stereo_view == RENDER_STEREO_VIEW_LEFT)
         m_sourceRect.y2 *= 0.5f;
       else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
         m_sourceRect.y1 += m_sourceRect.y2*0.5f;
       break;
 
     case CONF_FLAGS_STEREO_MODE_SBS:
-      if     (stereo_view == RENDER_STEREO_VIEW_LEFT)
+      if (stereo_view == RENDER_STEREO_VIEW_LEFT)
         m_sourceRect.x2 *= 0.5f;
       else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
         m_sourceRect.x1 += m_sourceRect.x2*0.5f;
       break;
 
+			case CONF_FLAGS_STEREO_MODE_SBS_2D:
+			m_sourceRect.x2 *= 0.5f;
+			break;
+
+		case CONF_FLAGS_STEREO_MODE_TAB_2D:
+			m_sourceRect.y2 *= 0.5f;
+			break;
+
     default:
-      /* assume SBS if nothing reported and we are doing 3d rendering */
-      if     (stereo_view == RENDER_STEREO_VIEW_LEFT)
-        m_sourceRect.x2 *= 0.5f;
-      else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
-        m_sourceRect.x1 += m_sourceRect.x2*0.5f;
-      break;
+     if (g_graphicsContext.GetStereoMode() == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)
+		 {if (stereo_view == RENDER_STEREO_VIEW_LEFT)
+				m_sourceRect.y2 *= 0.5f;
+		  else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
+				m_sourceRect.y1 += m_sourceRect.y2*0.5f;
+		 }
+
+		 if (g_graphicsContext.GetStereoMode() == RENDER_STEREO_MODE_SPLIT_VERTICAL)
+		 {
+			if (stereo_view == RENDER_STEREO_VIEW_LEFT)
+				m_sourceRect.x2 *= 0.5f;
+		  else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
+				m_sourceRect.x1 += m_sourceRect.x2*0.5f;
+		 }
   }
 
   m_sourceRect.x1 += (float)CMediaSettings::Get().GetCurrentVideoSettings().m_CropLeft;

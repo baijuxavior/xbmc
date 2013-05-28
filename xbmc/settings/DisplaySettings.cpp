@@ -623,3 +623,9 @@ void CDisplaySettings::SettingOptionsMode3dFiller(const CSetting *setting, std::
       ++it;
   }
 }
+
+void CDisplaySettings::SettingOptionsPreferred3DViewModeFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current)
+{
+  for (int i=0; i<PREFERRED_STEREO_MODE_COUNT; i++)
+			if (g_Windowing.SupportsStereo((RENDER_STEREO_MODE)i)) list.push_back(make_pair(g_localizeStrings.Get(36502+i),(PREFERRED_STEREO_MODE)i));
+}

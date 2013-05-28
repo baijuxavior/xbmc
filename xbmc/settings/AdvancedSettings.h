@@ -383,6 +383,9 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     CStdString m_videoExtensions;
     CStdString m_discStubExtensions;
 
+		CStdString m_sbs3dtags;
+		CStdString m_tab3dtags;
+
     CStdString m_logFolder;
 
     CStdString m_userAgent;
