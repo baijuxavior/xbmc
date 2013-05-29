@@ -732,6 +732,21 @@
           <control type="spinner" format="string" />
         </setting>
       </group>
+	  <group id="3">
+	  <setting id="subtitles.subtitledepth" type="integer" label="36520" help="">
+		<level>0</level>
+        <default>-20</default>
+		<dependencies> 
+   	      <dependency type="enable" setting="videoscreen.enable3dsupport">true</dependency> 
+   	    </dependencies>
+        <constraints>
+          <minimum>-50</minimum>
+          <step>2</step>
+          <maximum>50</maximum>
+        </constraints>
+        <control type="spinner" format="integer" delayed="true"/>
+       </setting>
+	  </group>
     </category>
     <category id="dvds" label="14087" help="36193">
       <group id="1">

@@ -14225,6 +14225,11 @@ msgctxt "#36519"
 msgid "Turn off 3D mode when playback is stopped"
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#36520"
+msgid "3D Subtitle Depth"
+msgstr ""
+
 #reserved strings 365XX
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp

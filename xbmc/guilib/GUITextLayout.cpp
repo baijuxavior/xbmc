@@ -43,7 +43,7 @@ CStdString CGUIString::GetAsString() const
   return text;
 }
 
-CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont)
+CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFont *borderFont, float depth)
 {
   m_font = font;
   m_borderFont = borderFont;
@@ -52,6 +52,7 @@ CGUITextLayout::CGUITextLayout(CGUIFont *font, bool wrap, float fHeight, CGUIFon
   m_maxHeight = fHeight;
   m_textWidth = 0;
   m_textHeight = 0;
+	m_textDepth = depth;
 }
 
 void CGUITextLayout::SetWrap(bool bWrap)
@@ -146,7 +147,10 @@ void CGUITextLayout::RenderOutline(float x, float y, color_t color, color_t outl
   if (!m_font)
     return;
 
-  // set the outline color
+  if (m_textDepth != 0)
+  g_graphicsContext.TranslateGUITransform(0, 0, m_textDepth);
+	
+	// set the outline color
   vecColors outlineColors;
   if (m_colors.size())
     outlineColors.push_back(outlineColor);
@@ -206,6 +210,9 @@ void CGUITextLayout::RenderOutline(float x, float y, color_t color, color_t outl
     y += m_font->GetLineHeight();
   }
   m_font->End();
+
+	if (m_textDepth != 0)
+  g_graphicsContext.TranslateGUITransform(0, 0, -m_textDepth);
 }
 
 bool CGUITextLayout::Update(const CStdString &text, float maxWidth, bool forceUpdate /*= false*/, bool forceLTRReadingOrder /*= false*/)

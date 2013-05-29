@@ -64,7 +64,7 @@ public:
 class CGUITextLayout
 {
 public:
-  CGUITextLayout(CGUIFont *font, bool wrap, float fHeight=0.0f, CGUIFont *borderFont = NULL);  // this may need changing - we may just use this class to replace CLabelInfo completely
+  CGUITextLayout(CGUIFont *font, bool wrap, float fHeight=0.0f, CGUIFont *borderFont = NULL, float depth = 0);  // this may need changing - we may just use this class to replace CLabelInfo completely
 
   // main function to render strings
   void Render(float x, float y, float angle, color_t color, color_t shadowColor, uint32_t alignment, float maxWidth, bool solid = false);
@@ -124,6 +124,8 @@ protected:
   CStdStringW m_lastText;
   float m_textWidth;
   float m_textHeight;
+	float m_textDepth;
+
 private:
   inline bool IsSpace(character_t letter) const XBMC_FORCE_INLINE
   {

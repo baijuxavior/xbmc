@@ -123,6 +123,7 @@ public:
   const RESOLUTION_INFO &GetResInfo() const;
   void SetRenderingResolution(const RESOLUTION_INFO &res, bool needsScaling);  ///< Sets scaling up for rendering
   void SetScalingResolution(const RESOLUTION_INFO &res, bool needsScaling);    ///< Sets scaling up for skin loading etc.
+	void TranslateGUITransform(float x, float y, float z);
   float GetScalingPixelRatio() const;
   void Flip(const CDirtyRegionList& dirty);
   void InvertFinalCoords(float &x, float &y) const;

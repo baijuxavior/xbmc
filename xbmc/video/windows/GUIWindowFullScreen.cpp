@@ -411,10 +411,11 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         RESOLUTION_INFO pal(720, 576, 0);
         CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CSettings::Get().GetInt("subtitles.color")], 0, CSettings::Get().GetInt("subtitles.height"), CSettings::Get().GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
         CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CSettings::Get().GetInt("subtitles.height"), CSettings::Get().GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+				float depth = CSettings::Get().GetInt("subtitles.subtitledepth");
         if (!subFont || !borderFont)
           CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else
-          m_subsLayout = new CGUITextLayout(subFont, true, 0, borderFont);
+         m_subsLayout = new CGUITextLayout(subFont, true, 0, borderFont, depth);
       }
       else
         m_subsLayout = NULL;
@@ -801,7 +802,8 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
 
       RESOLUTION res = g_graphicsContext.GetVideoResolution();
       g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
-
+			float depth = CSettings::Get().GetInt("subtitles.subtitledepth");
+			g_graphicsContext.TranslateGUITransform(0, 0, depth);
       float maxWidth = (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
       m_subsLayout->Update(subtitleText, maxWidth * 0.9f, false, true); // true to force LTR reading order (most Hebrew subs are this format)
 

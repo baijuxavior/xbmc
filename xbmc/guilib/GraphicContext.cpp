@@ -748,6 +748,12 @@ void CGraphicContext::SetScalingResolution(const RESOLUTION_INFO &res, bool need
   Unlock();
 }
 
+void CGraphicContext::TranslateGUITransform(float x, float y, float z)
+{
+  m_guiTransform *= TransformMatrix::CreateTranslation(x, y, z);
+  UpdateFinalTransform(m_guiTransform);
+}
+
 void CGraphicContext::SetRenderingResolution(const RESOLUTION_INFO &res, bool needsScaling)
 {
   Lock();
