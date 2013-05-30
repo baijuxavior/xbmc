@@ -493,5 +493,5 @@ protected:
   bool m_HasAudio;
 };
 
-int Get3DTypeFromMovieName(CStdString m_name);
+CStdString Get3DTypeFromMovieName(CStdString m_name);
 int GetPreferred3DPlaybackMode();

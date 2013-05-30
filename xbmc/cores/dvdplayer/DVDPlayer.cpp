@@ -2929,11 +2929,12 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
 		{
 		int preferred3dplaymode =CSettings::Get().GetInt("videoplayer.preferred3dplaymode");
 		int preferred3dviewmode = CSettings::Get().GetInt("videoplayer.preferred3dviewmode");
- 		int m_3dtype = Get3DTypeFromMovieName(m_filename);
 
-		if (m_3dtype == 1)
+		if (hint.stereo_mode == "") // if stereo_mode is not specified in matroska tags
+ 			hint.stereo_mode = Get3DTypeFromMovieName(m_filename);
+
+		if (hint.stereo_mode == "left_right" || hint.stereo_mode == "right_left")
 			{
-				hint.stereo_mode = "left_right";
 				if (preferred3dplaymode == 3) // show user choice
 					preferred3dplaymode = GetPreferred3DPlaybackMode();
 
@@ -2959,9 +2960,8 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
 						g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
 					}
 		}
-		else if (m_3dtype == 2)
+		else if (hint.stereo_mode == "top_bottom" || hint.stereo_mode == "bottom_top")
 			{
-				hint.stereo_mode = "top_bottom";
 				if (preferred3dplaymode == 3) // show user choice
 					preferred3dplaymode = GetPreferred3DPlaybackMode();
 
@@ -2988,12 +2988,11 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
 						g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
 					}
 			}
-		else if (m_3dtype == 0) // if not sbs or tab assume it is 2d
+		else // if not sbs or tab assume it is 2d
 			{ 
-				hint.stereo_mode = "mono";
 				CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
 				g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_OFF);
-			 }
+			}
 	}
 
   if(m_CurrentVideo.id    < 0
@@ -4235,7 +4234,7 @@ bool CDVDPlayer::CachePVRStream(void) const
       g_advancedSettings.m_bPVRCacheInDvdPlayer;
 }
 
-int Get3DTypeFromMovieName(CStdString m_name)
+CStdString Get3DTypeFromMovieName(CStdString m_name)
 {
 	StringUtils::ToUpper(m_name);
 	std::string tag = g_advancedSettings.m_sbs3dtags;
@@ -4248,7 +4247,7 @@ int Get3DTypeFromMovieName(CStdString m_name)
 			{ 
 				tag = tags[i];
 				if(m_name.find(tag)!= string::npos)
-					return 1;
+					return "left_right";
 			}
 	}
 
@@ -4260,11 +4259,11 @@ int Get3DTypeFromMovieName(CStdString m_name)
 		{ 
 			tag = tags[j];
 			if(m_name.find(tag)!= string::npos)
-				return 2;
+				return "top_bottom";
 		}
 	}
 
-	return 0;
+	return "";
 
 }
 
