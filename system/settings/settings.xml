@@ -575,6 +575,20 @@
           </constraints>
           <control type="spinner" format="integer" delayed="true"/>
 		</setting>
+		<setting id="videoplayer.preferred2dframe" type="integer" label="36521" help="">
+          <level>0</level>
+          <default>0</default>
+		  <dependencies> 
+   	        <dependency type="enable" setting="videoscreen.enable3dsupport">true</dependency> 
+   	      </dependencies>
+		  <constraints>
+		    <options>
+              <option label="36522">0</option> <!-- Left -->
+              <option label="36523">1</option> <!-- Right -->
+            </options>
+          </constraints>
+          <control type="spinner" format="integer" delayed="true"/>
+		</setting>
 		<setting id="videoplayer.stop3dmode" type="boolean" label="36519" help="">
           <level>0</level>
           <default>false</default>

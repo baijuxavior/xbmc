@@ -14230,6 +14230,21 @@ msgctxt "#36520"
 msgid "3D Subtitle Depth"
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#36521"
+msgid "Frame to use for SBS/OU 3D to 2D conversion"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36522"
+msgid "Left"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#36523"
+msgid "Right"
+msgstr ""
+
 #reserved strings 365XX
 
 #: xbmc/cores/dvdplayer/DVDInputStreams/DVDInputStreamNavigator.cpp

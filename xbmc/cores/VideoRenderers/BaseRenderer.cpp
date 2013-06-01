@@ -606,13 +606,19 @@ void CBaseRenderer::ManageDisplay()
         m_sourceRect.x1 += m_sourceRect.x2*0.5f;
       break;
 
-			case CONF_FLAGS_STEREO_MODE_SBS_2D:
-			m_sourceRect.x2 *= 0.5f;
-			break;
+	case CONF_FLAGS_STEREO_MODE_SBS_2D:
+	  if (stereo_view == RENDER_STEREO_VIEW_LEFT)
+        m_sourceRect.x2 *= 0.5f;
+      else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
+        m_sourceRect.x1 += m_sourceRect.x2*0.5f;
+      break;
 
-		case CONF_FLAGS_STEREO_MODE_TAB_2D:
-			m_sourceRect.y2 *= 0.5f;
-			break;
+	case CONF_FLAGS_STEREO_MODE_TAB_2D:
+	  if (stereo_view == RENDER_STEREO_VIEW_LEFT)
+        m_sourceRect.y2 *= 0.5f;
+      else if(stereo_view == RENDER_STEREO_VIEW_RIGHT)
+        m_sourceRect.y1 += m_sourceRect.y2*0.5f;
+      break;
 
     default:
      if (g_graphicsContext.GetStereoMode() == RENDER_STEREO_MODE_SPLIT_HORIZONTAL)

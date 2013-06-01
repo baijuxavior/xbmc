@@ -2952,6 +2952,11 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
 					{
 						hint.stereo_mode = "sbs_2d";
 						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+						int preferred2dframe = CSettings::Get().GetInt("videoplayer.preferred2dframe");
+						if (preferred2dframe == 0)
+							g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
+						else
+							g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_RIGHT);
 					}
 
 				if (preferred3dplaymode == 2) //normal
@@ -2980,6 +2985,11 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source, bool reset)
 					{
 						hint.stereo_mode = "tab_2d";
 						CSettings::Get().SetInt("videoscreen.mode3d", RENDER_STEREO_MODE_OFF);
+						int preferred2dframe = CSettings::Get().GetInt("videoplayer.preferred2dframe");
+						if (preferred2dframe == 0)
+							g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_LEFT);
+						else
+							g_graphicsContext.SetStereoView(RENDER_STEREO_VIEW_RIGHT);
 					}
 
 				if (preferred3dplaymode == 2) //normal
